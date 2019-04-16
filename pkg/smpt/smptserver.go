@@ -2,14 +2,14 @@ package smpt
 
 import (
 	"crypto/tls"
-	"net/smtp"
 )
 
 type SmtpServer struct {
 	Host      string
 	Port      string
+	Email     string
+	Password  string
 	TlsConfig *tls.Config
-	Auth      smtp.Auth
 }
 
 func (s *SmtpServer) dial() (*tls.Conn, error) {

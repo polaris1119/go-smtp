@@ -5,7 +5,6 @@ import (
 	"gosmtp/pkg/config"
 	"gosmtp/pkg/smpt"
 	"log"
-	"net/smtp"
 	"strings"
 )
 
@@ -13,13 +12,14 @@ func main() {
 	config := config.New()
 
 	smtpServer := &smpt.SmtpServer{
-		Host: config.Host,
-		Port: config.Port,
+		Host:     config.Host,
+		Port:     config.Port,
+		Email:    config.Sender,
+		Password: config.Password,
 		TlsConfig: &tls.Config{
 			InsecureSkipVerify: true,
 			ServerName:         config.Host,
 		},
-		Auth: smtp.PlainAuth("", config.Sender, config.Password, config.Host),
 	}
 
 	mail := &smpt.Mail{

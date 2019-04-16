@@ -6,14 +6,16 @@ import (
 )
 
 type SmtpService struct {
-	s *SmtpServer
-	m *Mail
+	s    *SmtpServer
+	m    *Mail
+	Auth smtp.Auth
 }
 
-func New(smtp *SmtpServer, mail *Mail) *SmtpService {
+func New(s *SmtpServer, m *Mail) *SmtpService {
 	return &SmtpService{
-		s: smtp,
-		m: mail,
+		s:    s,
+		m:    m,
+		Auth: smtp.PlainAuth("", s.Email, s.Password, s.Host),
 	}
 }
 
@@ -28,7 +30,7 @@ func (s *SmtpService) Send() error {
 		return err
 	}
 
-	if err = client.Auth(s.s.Auth); err != nil {
+	if err = client.Auth(s.Auth); err != nil {
 		return err
 	}
 
