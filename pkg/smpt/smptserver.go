@@ -1,4 +1,4 @@
-package gosmtp
+package smpt
 
 import (
 	"crypto/tls"

@@ -2,8 +2,8 @@ package main
 
 import (
 	"crypto/tls"
-	"gosmtp"
-	"gosmtp/config"
+	"gosmtp/pkg/config"
+	"gosmtp/pkg/smpt"
 	"log"
 	"net/smtp"
 	"strings"
@@ -12,13 +12,13 @@ import (
 func main() {
 	config := config.New()
 
-	mail := &gosmtp.Mail{}
+	mail := &smpt.Mail{}
 	mail.Sender = config.Sender
 	mail.To = strings.Split(config.To, ",")
 	mail.Subject = config.Subject
 	mail.Body = config.Body
 
-	s := &gosmtp.SmtpServer{
+	s := &smpt.SmtpServer{
 		Host: config.Host,
 		Port: config.Port,
 		TlsConfig: &tls.Config{
@@ -28,7 +28,7 @@ func main() {
 		Auth: smtp.PlainAuth("", config.Sender, config.Password, config.Host),
 	}
 
-	serivce := gosmtp.New(s, mail)
+	serivce := smpt.New(s, mail)
 	err := serivce.Send()
 	if err != nil {
 		log.Printf("[Error] Unable to send emails: %v", err)
