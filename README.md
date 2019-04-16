@@ -14,3 +14,7 @@ SUBJECT="Hello from StudyGolang" \
 BODY="Happy Coding~" \
 make run
 ```
+
+## Artiles
+
+- [https://peter.bourgon.org/go-best-practices-2016/#repository-structure](https://peter.bourgon.org/go-best-practices-2016/#repository-structure)
