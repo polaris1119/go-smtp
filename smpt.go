@@ -17,23 +17,23 @@ func New(smtp *SmtpServer, mail *Mail) *SmtpService {
 	}
 }
 
-func (s *SmtpService) Send() {
+func (s *SmtpService) Send() error {
 	conn, err := s.s.dial()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	client, err := smtp.NewClient(conn, s.s.Host)
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	if err = client.Auth(s.s.Auth); err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	if err = client.Mail(s.m.Sender); err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	receivers := append(s.m.To, s.m.Cc...)
@@ -41,26 +41,26 @@ func (s *SmtpService) Send() {
 	for _, k := range receivers {
 		log.Println("sending to: ", k)
 		if err = client.Rcpt(k); err != nil {
-			log.Panic(err)
+			return err
 		}
 	}
 
 	w, err := client.Data()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	_, err = w.Write([]byte(s.m.BuildMessage()))
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	err = w.Close()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	client.Quit()
 
-	log.Println("Mail sent successfully")
+	return nil
 }

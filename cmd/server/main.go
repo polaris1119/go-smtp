@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"gosmtp"
 	"gosmtp/config"
+	"log"
 	"net/smtp"
 	"strings"
 )
@@ -28,5 +29,8 @@ func main() {
 	}
 
 	serivce := gosmtp.New(s, mail)
-	serivce.Send()
+	err := serivce.Send()
+	if err != nil {
+		log.Printf("[Error] Unable to send emails: %v", err)
+	}
 }
