@@ -6,26 +6,21 @@ import (
 )
 
 type SmtpService struct {
-	s    *SmtpServer
-	m    *Mail
-	Auth smtp.Auth
+	server SmtpServerI
+	mail   *Mail
+	Auth   smtp.Auth
 }
 
 func New(s *SmtpServer, m *Mail) *SmtpService {
 	return &SmtpService{
-		s:    s,
-		m:    m,
-		Auth: smtp.PlainAuth("", s.Email, s.Password, s.Host),
+		server: s,
+		mail:   m,
+		Auth:   smtp.PlainAuth("", s.Email, s.Password, s.Host),
 	}
 }
 
 func (s *SmtpService) Send() error {
-	conn, err := s.s.dial()
-	if err != nil {
-		return err
-	}
-
-	client, err := smtp.NewClient(conn, s.s.Host)
+	client, err := s.server.new()
 	if err != nil {
 		return err
 	}
@@ -34,12 +29,12 @@ func (s *SmtpService) Send() error {
 		return err
 	}
 
-	if err = client.Mail(s.m.Sender); err != nil {
+	if err = client.Mail(s.mail.Sender); err != nil {
 		return err
 	}
 
-	receivers := append(s.m.To, s.m.Cc...)
-	receivers = append(receivers, s.m.Bcc...)
+	receivers := append(s.mail.To, s.mail.Cc...)
+	receivers = append(receivers, s.mail.Bcc...)
 	for _, k := range receivers {
 		log.Println("sending to: ", k)
 		if err = client.Rcpt(k); err != nil {
@@ -52,7 +47,7 @@ func (s *SmtpService) Send() error {
 		return err
 	}
 
-	_, err = w.Write([]byte(s.m.BuildMessage()))
+	_, err = w.Write([]byte(s.mail.BuildMessage()))
 	if err != nil {
 		return err
 	}

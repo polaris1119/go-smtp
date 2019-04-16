@@ -2,7 +2,12 @@ package smpt
 
 import (
 	"crypto/tls"
+	"net/smtp"
 )
+
+type SmtpServerI interface {
+	new() (*smtp.Client, error)
+}
 
 type SmtpServer struct {
 	Host      string
@@ -12,8 +17,14 @@ type SmtpServer struct {
 	TlsConfig *tls.Config
 }
 
-func (s *SmtpServer) dial() (*tls.Conn, error) {
-	return tls.Dial("tcp", s.serverName(), s.TlsConfig)
+var _ SmtpServerI = (*SmtpServer)(nil)
+
+func (s *SmtpServer) new() (*smtp.Client, error) {
+	conn, err := tls.Dial("tcp", s.serverName(), s.TlsConfig)
+	if err != nil {
+		return nil, err
+	}
+	return smtp.NewClient(conn, s.Host)
 }
 
 func (s *SmtpServer) serverName() string {
