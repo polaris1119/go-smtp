@@ -5,7 +5,7 @@ import (
 	"net/smtp"
 )
 
-type SmtpServerI interface {
+type Smtper interface {
 	new() (*smtp.Client, error)
 }
 
@@ -17,7 +17,7 @@ type SmtpServer struct {
 	TlsConfig *tls.Config
 }
 
-var _ SmtpServerI = (*SmtpServer)(nil)
+var _ Smtper = (*SmtpServer)(nil)
 
 func (s *SmtpServer) new() (*smtp.Client, error) {
 	conn, err := tls.Dial("tcp", s.serverName(), s.TlsConfig)

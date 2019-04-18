@@ -6,7 +6,7 @@ import (
 )
 
 type SmtpService struct {
-	server SmtpServerI
+	server Smtper
 	mail   *Mail
 	Auth   smtp.Auth
 }
